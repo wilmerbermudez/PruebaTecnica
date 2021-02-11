@@ -47,12 +47,6 @@ class CartController extends Controller
       $cart[$producto->id]->quantity=$quantity;
       return redirect()->route('cart-show');
     }
-    // Trash cart
-    public function trash()
-    {
-      \Session::forget('cart');
-      return redirect()->route('cart-show');
-    }
     // Total
     private function total()
     {
