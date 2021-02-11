@@ -3,82 +3,64 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Producto;
 
 class CartController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function _construct()
     {
-        //
+        if(!\Session::has('cart')) \Session::put('cart', array()); // si no existe la vaiable la crea y creo un array
+    }
+    //show
+    public function show()
+    {
+      $cart=\Session::get('cart');
+      $total = $this->total();
+      return view('tienda.cart', compact('cart', 'total'));
+    }
+    //Add
+    public function add($id)
+    {
+        $producto=Producto::find($id);
+        $product=$producto->unidades;
+        $cart= \Session::get('cart');
+        $producto->quantity=1;
+        $cart[$producto->id]=$producto;
+        \Session::put('cart', $cart);
+        return redirect()->route('cart-show');
+    }
+    //Delete item
+    public function delete($id)
+    {
+      $producto=Producto::find($id);
+      $cart= \Session::get('cart');
+      unset($cart[$producto->id]);
+      \Session::put('cart', $cart);
+      return redirect()->route('cart-show');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    // Update item
+    public function update($id,$quantity)
     {
-        //
+      $producto=Producto::find($id);
+      $cart= \Session::get('cart');
+      $cart[$producto->id]->quantity=$quantity;
+      return redirect()->route('cart-show');
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    // Trash cart
+    public function trash()
     {
-        //
+      \Session::forget('cart');
+      return redirect()->route('cart-show');
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    // Total
+    private function total()
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+      $cart= \Session::get('cart');
+      $total=0;
+      foreach ($cart as $item) {
+        $total+=$item->precio * $item->quantity;
+      }
+      return $total;
     }
 }
