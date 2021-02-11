@@ -36,7 +36,7 @@
                       min="1"
                       max="100"
                       value="{{$item->quantity}}"
-                      id="medicamento_{{$item->id}}"
+                      id="producto_{{$item->id}}"
                     >
                     <a
                       href="#"
@@ -47,7 +47,17 @@
                           <i class="fa fa-refresh"></i>
                     </a>
                   </td>
-                  <td>${{number_format($item->precio * $item->quantity,2)}}</td>
+                    <?php
+                      if ($item->quantity >= 5) 
+                      {
+                           $descuento = ($item->precio * $item->quantity) *0.1;
+                           $total = ($item->precio * $item->quantity) - $descuento;
+                        }
+                        else {
+                            $total =$item->precio * $item->quantity;
+                        }
+                        ?>
+                  <td>${{number_format($total,2)}}</td>
                   <td>
                     <a href="{{route('cart-delete', $item->id)}}" class="btn btn-danger">
                       <i class="fa fa-remove"></i>
@@ -68,10 +78,10 @@
     @endif
     <hr>
     <p>
-      <a href="{{route('home')}}" class="btn btn-primary">
+      <a href="/productos" class="btn btn-primary">
         <i class="fa fa-chevron-circle-left"></i>Seguir comprando
       </a>
-      <a href="#" class="btn btn-primary">
+      <a href="{{route('order-detail')}}" class="btn btn-primary">
         Detalles del Pedido <i class="fa fa-chevron-circle-right"></i>
       </a>
     </p>
