@@ -9,11 +9,6 @@
     </div>
     <div class="table-cart">
       @if (count($cart))
-        <p>
-          <a href="{{route('cart-trash')}}" class="btn btn-danger">
-            Vaciar carrito <i class="fa fa-trash"></i>
-          </a>
-        </p>
         <div class="table-responsive">
           <table class="table table-striped table-hover table-bordered">
             <thead>
